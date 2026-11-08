@@ -1,9 +1,10 @@
 ﻿[CmdletBinding()]
 param(
-    [ValidateSet('Detect','Install','Launch','Verify','Generate')][string]$Action='Detect',
+    [ValidateSet('Detect','Install','Launch','Verify','Generate','Extensions')][string]$Action='Detect',
     [ValidateSet('Auto','ROCm','DirectML','ZLUDA')][string]$Backend='Auto',
     [int]$GpuIndex=-1,
     [switch]$Experimental,
+    [switch]$SafeMode,
     [switch]$NonInteractive,
     [ValidateRange(1024,65535)][int]$Port=7865
 )
@@ -124,7 +125,15 @@ try {
         if (!@($inventory | Where-Object pnp -eq $state.pnp).Count) { throw 'Configured AMD GPU is no longer present.' }
         $head=(& $env:GIT_PYTHON_GIT_EXECUTABLE -C $neo rev-parse HEAD).Trim()
         if ($LASTEXITCODE -ne 0 -or $head -ne $manifest.forge.commit) { throw 'Forge revision changed. Use a separate fresh install.' }
-        if ($Action -eq 'Launch') { Invoke-Checked $python @("$PSScriptRoot\runtime.py",'launch','--root',$runtime,'--port',"$Port") }
+        if ($Action -eq 'Launch') {
+            $launchArgs=@("$PSScriptRoot\runtime.py",'launch','--root',$runtime,'--port',"$Port")
+            if ($SafeMode) { $launchArgs += '--safe-mode' }
+            Invoke-Checked $python $launchArgs
+        }
+        elseif ($Action -eq 'Extensions') {
+            if (!$NonInteractive -and (Read-Host 'Install the 14 EasyForgeNeo extensions (experimental on AMD)? [Y/N]') -notmatch '^(?i)y(es)?$') { return }
+            Invoke-Checked $python @("$PSScriptRoot\extensions.py",'--root',$runtime)
+        }
         elseif ($Action -eq 'Verify') {
             Invoke-Checked $python @('-m','pip','check')
             Invoke-Checked $python @("$PSScriptRoot\runtime.py",'verify','--root',$runtime)
