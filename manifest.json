@@ -1,0 +1,305 @@
+{
+  "recipe": "2026-11-08.1",
+  "checked": "2026-11-08",
+  "python": "3.13.15",
+  "rocm": "10.1.0",
+  "torch": "2.14.0+rocm10.1.0",
+  "torchvision": "0.29.0a0+rocm10.1.0",
+  "amdIndex": "https://stable.repo.amd.com/rocm/whl-next/",
+  "forge": {
+    "url": "https://github.com/Haoming02/sd-webui-forge-classic.git",
+    "commit": "4f4284b02a5c814b81c328c64ed7e99a139f21ef"
+  },
+  "uv": {
+    "url": "https://github.com/astral-sh/uv/releases/download/0.12.5/uv-x86_64-pc-windows-msvc.zip",
+    "sha256": "4c4d49d8738847d9b71ba319e49a5688c93eac0fe6204b1df24e98528dddf39a"
+  },
+  "git": {
+    "url": "https://github.com/git-for-windows/git/releases/download/v2.53.0.windows.3/MinGit-2.53.0.3-64-bit.zip",
+    "sha256": "0d7c85a26e45668b35d0d0aeb763289376cfc039e55e0938a617ed0dfa32e433"
+  },
+  "gpus": [
+    {
+      "pattern": "^(?:AMD |ATI )?Radeon\\ RX\\ 7900\\ XTX$",
+      "arch": "gfx1100",
+      "tier": "candidate",
+      "note": "AMD architecture mapping; Forge Neo image generation unverified"
+    },
+    {
+      "pattern": "^(?:AMD |ATI )?Radeon\\ RX\\ 7900\\ XT$",
+      "arch": "gfx1100",
+      "tier": "candidate",
+      "note": "AMD architecture mapping; Forge Neo image generation unverified"
+    },
+    {
+      "pattern": "^(?:AMD |ATI )?Radeon\\ RX\\ 7900\\ GRE$",
+      "arch": "gfx1100",
+      "tier": "candidate",
+      "note": "AMD architecture mapping; Forge Neo image generation unverified"
+    },
+    {
+      "pattern": "^(?:AMD |ATI )?Radeon\\ PRO\\ W7900\\ Dual\\ Slot$",
+      "arch": "gfx1100",
+      "tier": "candidate",
+      "note": "AMD architecture mapping; Forge Neo image generation unverified"
+    },
+    {
+      "pattern": "^(?:AMD |ATI )?Radeon\\ PRO\\ W7900$",
+      "arch": "gfx1100",
+      "tier": "candidate",
+      "note": "AMD architecture mapping; Forge Neo image generation unverified"
+    },
+    {
+      "pattern": "^(?:AMD |ATI )?Radeon\\ PRO\\ W7800\\ 48GB$",
+      "arch": "gfx1100",
+      "tier": "candidate",
+      "note": "AMD architecture mapping; Forge Neo image generation unverified"
+    },
+    {
+      "pattern": "^(?:AMD |ATI )?Radeon\\ PRO\\ W7800$",
+      "arch": "gfx1100",
+      "tier": "candidate",
+      "note": "AMD architecture mapping; Forge Neo image generation unverified"
+    },
+    {
+      "pattern": "^(?:AMD |ATI )?Radeon\\ RX\\ 7800\\ XT$",
+      "arch": "gfx1101",
+      "tier": "candidate",
+      "note": "AMD architecture mapping; Forge Neo image generation unverified"
+    },
+    {
+      "pattern": "^(?:AMD |ATI )?Radeon\\ RX\\ 7800$",
+      "arch": "gfx1101",
+      "tier": "candidate",
+      "note": "AMD architecture mapping; Forge Neo image generation unverified"
+    },
+    {
+      "pattern": "^(?:AMD |ATI )?Radeon\\ RX\\ 7700\\ XT$",
+      "arch": "gfx1101",
+      "tier": "candidate",
+      "note": "AMD architecture mapping; Forge Neo image generation unverified"
+    },
+    {
+      "pattern": "^(?:AMD |ATI )?Radeon\\ RX\\ 7700$",
+      "arch": "gfx1101",
+      "tier": "candidate",
+      "note": "AMD architecture mapping; Forge Neo image generation unverified"
+    },
+    {
+      "pattern": "^(?:AMD |ATI )?Radeon\\ PRO\\ W7700$",
+      "arch": "gfx1101",
+      "tier": "candidate",
+      "note": "AMD architecture mapping; Forge Neo image generation unverified"
+    },
+    {
+      "pattern": "^(?:AMD |ATI )?Radeon\\ PRO\\ V710$",
+      "arch": "gfx1101",
+      "tier": "candidate",
+      "note": "AMD architecture mapping; Forge Neo image generation unverified"
+    },
+    {
+      "pattern": "^(?:AMD |ATI )?Radeon\\ RX\\ 7700S$",
+      "arch": "gfx1102",
+      "tier": "candidate",
+      "note": "AMD architecture mapping; Forge Neo image generation unverified"
+    },
+    {
+      "pattern": "^(?:AMD |ATI )?Radeon\\ RX\\ 7650\\ GRE$",
+      "arch": "gfx1102",
+      "tier": "candidate",
+      "note": "AMD architecture mapping; Forge Neo image generation unverified"
+    },
+    {
+      "pattern": "^(?:AMD |ATI )?Radeon\\ RX\\ 7600\\ XT$",
+      "arch": "gfx1102",
+      "tier": "candidate",
+      "note": "AMD architecture mapping; Forge Neo image generation unverified"
+    },
+    {
+      "pattern": "^(?:AMD |ATI )?Radeon\\ RX\\ 7600$",
+      "arch": "gfx1102",
+      "tier": "candidate",
+      "note": "AMD architecture mapping; Forge Neo image generation unverified"
+    },
+    {
+      "pattern": "^(?:AMD |ATI )?Radeon\\ RX\\ 7400$",
+      "arch": "gfx1102",
+      "tier": "candidate",
+      "note": "AMD architecture mapping; Forge Neo image generation unverified"
+    },
+    {
+      "pattern": "^(?:AMD |ATI )?Radeon\\ 780M$",
+      "arch": "gfx1103",
+      "tier": "experimental",
+      "note": "AMD architecture mapping; Forge Neo image generation unverified"
+    },
+    {
+      "pattern": "^(?:AMD |ATI )?Radeon\\ RX\\ 9070\\ XT$",
+      "arch": "gfx1201",
+      "tier": "candidate",
+      "note": "AMD architecture mapping; Forge Neo image generation unverified"
+    },
+    {
+      "pattern": "^(?:AMD |ATI )?Radeon\\ RX\\ 9070\\ GRE$",
+      "arch": "gfx1201",
+      "tier": "candidate",
+      "note": "AMD architecture mapping; Forge Neo image generation unverified"
+    },
+    {
+      "pattern": "^(?:AMD |ATI )?Radeon\\ RX\\ 9070$",
+      "arch": "gfx1201",
+      "tier": "candidate",
+      "note": "AMD architecture mapping; Forge Neo image generation unverified"
+    },
+    {
+      "pattern": "^(?:AMD |ATI )?Radeon\\ AI\\ PRO\\ R9700$",
+      "arch": "gfx1201",
+      "tier": "candidate",
+      "note": "AMD architecture mapping; Forge Neo image generation unverified"
+    },
+    {
+      "pattern": "^(?:AMD |ATI )?Radeon\\ RX\\ 9060\\ XT$",
+      "arch": "gfx1200",
+      "tier": "candidate",
+      "note": "AMD architecture mapping; Forge Neo image generation unverified"
+    },
+    {
+      "pattern": "^(?:AMD |ATI )?Radeon\\ RX\\ 9060\\ XT\\ 8GB$",
+      "arch": "gfx1200",
+      "tier": "candidate",
+      "note": "AMD architecture mapping; Forge Neo image generation unverified"
+    },
+    {
+      "pattern": "^(?:AMD |ATI )?Radeon\\ RX\\ 9060$",
+      "arch": "gfx1200",
+      "tier": "candidate",
+      "note": "AMD architecture mapping; Forge Neo image generation unverified"
+    },
+    {
+      "pattern": "^(?:AMD |ATI )?Radeon\\ RX\\ 6950\\ XT$",
+      "arch": "gfx1030",
+      "tier": "experimental",
+      "note": "AMD architecture mapping; Forge Neo image generation unverified"
+    },
+    {
+      "pattern": "^(?:AMD |ATI )?Radeon\\ RX\\ 6900\\ XT$",
+      "arch": "gfx1030",
+      "tier": "experimental",
+      "note": "AMD architecture mapping; Forge Neo image generation unverified"
+    },
+    {
+      "pattern": "^(?:AMD |ATI )?Radeon\\ RX\\ 6800\\ XT$",
+      "arch": "gfx1030",
+      "tier": "experimental",
+      "note": "AMD architecture mapping; Forge Neo image generation unverified"
+    },
+    {
+      "pattern": "^(?:AMD |ATI )?Radeon\\ PRO\\ W6800$",
+      "arch": "gfx1030",
+      "tier": "experimental",
+      "note": "AMD architecture mapping; Forge Neo image generation unverified"
+    },
+    {
+      "pattern": "^(?:AMD |ATI )?Radeon\\ PRO\\ V620$",
+      "arch": "gfx1030",
+      "tier": "experimental",
+      "note": "AMD architecture mapping; Forge Neo image generation unverified"
+    },
+    {
+      "pattern": "^(?:AMD |ATI )?Radeon\\ RX\\ 6750\\ XT$",
+      "arch": "gfx1031",
+      "tier": "experimental",
+      "note": "AMD architecture mapping; Forge Neo image generation unverified"
+    },
+    {
+      "pattern": "^(?:AMD |ATI )?Radeon\\ RX\\ 6700\\ XT$",
+      "arch": "gfx1031",
+      "tier": "experimental",
+      "note": "AMD architecture mapping; Forge Neo image generation unverified"
+    },
+    {
+      "pattern": "^(?:AMD |ATI )?Radeon\\ RX\\ 6700$",
+      "arch": "gfx1031",
+      "tier": "experimental",
+      "note": "AMD architecture mapping; Forge Neo image generation unverified"
+    },
+    {
+      "pattern": "^(?:AMD |ATI )?Radeon\\ RX\\ 6650\\ XT$",
+      "arch": "gfx1032",
+      "tier": "experimental",
+      "note": "AMD architecture mapping; Forge Neo image generation unverified"
+    },
+    {
+      "pattern": "^(?:AMD |ATI )?Radeon\\ RX\\ 6600\\ XT$",
+      "arch": "gfx1032",
+      "tier": "experimental",
+      "note": "AMD architecture mapping; Forge Neo image generation unverified"
+    },
+    {
+      "pattern": "^(?:AMD |ATI )?Radeon\\ RX\\ 6600$",
+      "arch": "gfx1032",
+      "tier": "experimental",
+      "note": "AMD architecture mapping; Forge Neo image generation unverified"
+    },
+    {
+      "pattern": "^(?:AMD |ATI )?Radeon\\ PRO\\ W6600$",
+      "arch": "gfx1032",
+      "tier": "experimental",
+      "note": "AMD architecture mapping; Forge Neo image generation unverified"
+    },
+    {
+      "pattern": "^(?:AMD |ATI )?Radeon\\ RX\\ 6500\\ XT$",
+      "arch": "gfx1034",
+      "tier": "experimental",
+      "note": "AMD architecture mapping; Forge Neo image generation unverified"
+    },
+    {
+      "pattern": "^(?:AMD |ATI )?Radeon\\ RX\\ 6500$",
+      "arch": "gfx1034",
+      "tier": "experimental",
+      "note": "AMD architecture mapping; Forge Neo image generation unverified"
+    },
+    {
+      "pattern": "^(?:AMD |ATI )?Radeon\\ RX\\ 6500\\ 4GB$",
+      "arch": "gfx1034",
+      "tier": "experimental",
+      "note": "AMD architecture mapping; Forge Neo image generation unverified"
+    },
+    {
+      "pattern": "^(?:AMD |ATI )?Radeon\\ PRO\\ W6400$",
+      "arch": "gfx1034",
+      "tier": "experimental",
+      "note": "AMD architecture mapping; Forge Neo image generation unverified"
+    },
+    {
+      "pattern": "^(?:AMD |ATI )?Radeon\\ RX\\ 5700\\ XT\\ 50th\\ Anniversary$",
+      "arch": "gfx1010",
+      "tier": "experimental",
+      "note": "AMD architecture mapping; Forge Neo image generation unverified"
+    },
+    {
+      "pattern": "^(?:AMD |ATI )?Radeon\\ RX\\ 5700\\ XT$",
+      "arch": "gfx1010",
+      "tier": "experimental",
+      "note": "AMD architecture mapping; Forge Neo image generation unverified"
+    },
+    {
+      "pattern": "^(?:AMD |ATI )?Radeon\\ RX\\ 5700$",
+      "arch": "gfx1010",
+      "tier": "experimental",
+      "note": "AMD architecture mapping; Forge Neo image generation unverified"
+    },
+    {
+      "pattern": "^(?:AMD |ATI )?Radeon\\ RX\\ 5600\\ XT$",
+      "arch": "gfx1010",
+      "tier": "experimental",
+      "note": "AMD architecture mapping; Forge Neo image generation unverified"
+    },
+    {
+      "pattern": "^(?:AMD |ATI )?Radeon\\ RX\\ 5600$",
+      "arch": "gfx1010",
+      "tier": "experimental",
+      "note": "AMD architecture mapping; Forge Neo image generation unverified"
+    }
+  ]
+}
