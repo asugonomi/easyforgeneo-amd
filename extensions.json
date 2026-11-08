@@ -1,0 +1,76 @@
+{
+  "schema": 1,
+  "source": "https://github.com/hirorohi03/EasyForgeNeo/blob/4fa851def666d0ba120179b2fd3752d661936c53/EasyForgeNeo/ForgeNeo/ForgeNeoExtension.bat",
+  "extensions": [
+    {
+      "name": "--sd-webui-ar-plusplus",
+      "url": "https://github.com/altoiddealer/--sd-webui-ar-plusplus.git",
+      "commit": "8b900cd2748f95bce455db62ba0cb08093a3ca59"
+    },
+    {
+      "name": "aadetailer-neoforge",
+      "url": "https://github.com/abzaloff/aadetailer-neoforge.git",
+      "commit": "c4c036d3b1f8bd3a298d6e64878d8338dbfe2597"
+    },
+    {
+      "name": "model-keyword",
+      "url": "https://github.com/mix1009/model-keyword.git",
+      "commit": "3e841dfa2a9c958a195a6d4fc1a1e1d2fc0d8d0b"
+    },
+    {
+      "name": "repeat-generate-4NEO",
+      "url": "https://github.com/hirorohi03/repeat-generate-4NEO.git",
+      "commit": "d15479ff3b4f5dee7a0e2bbe2d8bbd5b87a575bf"
+    },
+    {
+      "name": "ScribeNEO",
+      "url": "https://github.com/hirorohi03/ScribeNEO.git",
+      "commit": "e9a9deaced174c040f4ddff0540432d761c7c650"
+    },
+    {
+      "name": "sd-dynamic-prompts",
+      "url": "https://github.com/abzaloff/sd-dynamic-prompts.git",
+      "commit": "3e62452776f52e2c641c2c52d3cd908140c3743e"
+    },
+    {
+      "name": "sd-forge-couple",
+      "url": "https://github.com/Haoming02/sd-forge-couple.git",
+      "commit": "c7884e81623d7fcbf4c92e3aea14ced8b5b6aa74"
+    },
+    {
+      "name": "sd-webui-forge-spectrum",
+      "url": "https://github.com/hirorohi03/sd-webui-forge-spectrum.git",
+      "commit": "61296649ce09cb30b9bdd43f65e0ef9eabc62d26"
+    },
+    {
+      "name": "sd-webui-negpip",
+      "url": "https://github.com/hako-mikan/sd-webui-negpip.git",
+      "commit": "97140e4d6e3b5d6eb318337d246a96283ca3f218"
+    },
+    {
+      "name": "sd-webui-pnginfo-beautify",
+      "url": "https://github.com/bluelovers/sd-webui-pnginfo-beautify.git",
+      "commit": "8acb72bd44188b68bab71f466ba5660dfd1fdfcf"
+    },
+    {
+      "name": "sd-webui-prompt-all-in-one-neo",
+      "url": "https://github.com/eduardoabreu81/sd-webui-prompt-all-in-one-neo.git",
+      "commit": "c46e279f87f912e5e4ede37bfaa8230fe0222f1d"
+    },
+    {
+      "name": "sd-webui-tagcomplete-neo",
+      "url": "https://github.com/eduardoabreu81/sd-webui-tagcomplete-neo.git",
+      "commit": "645f22f0d8ba5ad7f10f54aadcf292cf0499e9f8"
+    },
+    {
+      "name": "Stable-Diffusion-Webui-Civitai-Helper-RED-UPDATE",
+      "url": "https://github.com/Replactionap/Stable-Diffusion-Webui-Civitai-Helper-RED-UPDATE.git",
+      "commit": "2556ffd6b9032e66669e31433bd74090e7f5d1b4"
+    },
+    {
+      "name": "z-tipo-extension",
+      "url": "https://github.com/KohakuBlueleaf/z-tipo-extension.git",
+      "commit": "549a43365a1fb5e1c545f8a253562627f782caaa"
+    }
+  ]
+}

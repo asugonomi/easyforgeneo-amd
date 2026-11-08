@@ -24,3 +24,7 @@
 | [MinGit release](https://github.com/git-for-windows/git/releases/tag/v2.53.0.windows.3) | MinGit 2.53.0.3 64-bit ZIP、GitHub release APIのSHA256 |
 
 AMD公式のOS/PyTorch対応があっても、Forge Neo・各モデル・拡張の組み合わせまでAMDが認証しているとは解釈しません。モデル生成の成功判定には利用者のAMD実機での検証が必要です。
+
+## v0.2.0 拡張の出典
+
+EasyForgeNeoの `EasyForgeNeo/ForgeNeo/ForgeNeoExtension.bat` を再確認し、最新HEADが前回と同じ `4fa851def666d0ba120179b2fd3752d661936c53` であることを確認。各拡張の取得元と固定commitは [extensions.json](extensions.json) に記録。各ソースのinstall.py、pyproject.toml等から依存関係を調査。TIPOの `tipo_installer/scheme.py` にある `TIPO_NO_AUTO_INSTALL` を使用。

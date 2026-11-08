@@ -1,7 +1,7 @@
 @echo off
 setlocal
 chcp 65001 >nul
-"%SystemRoot%\System32\WindowsPowerShell1.0\powershell.exe" -NoLogo -NoProfile -ExecutionPolicy Bypass -File "%~dp0scripts\Manage.ps1" -Action Install %*
+"%SystemRoot%\System32\WindowsPowerShell\v1.0\powershell.exe" -NoLogo -NoProfile -ExecutionPolicy Bypass -File "%~dp0scripts\Manage.ps1" -Action Install %*
 set "result=%errorlevel%"
 echo.
 echo Exit code: %result%

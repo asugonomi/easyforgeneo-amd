@@ -2,7 +2,7 @@
 
 **Windows Radeon PCで、ComfyUIを使わずForge Neoの画面から画像を生成するための導入補助です。** Git・Pythonの事前導入は不要です。2026年11月8日の公式情報を調査し、Forge Neoの版とAMD用PyTorchを固定しています。
 
-これはEasyForgeNeo公式のAMD版ではありません。EasyForgeNeoはNVIDIA専用のため、そのインストーラーを呼ばず、**同じForge Neo本体を別フォルダーに導入する独立した補助パッケージ**です。EasyForgeNeo付属の拡張・モデル一括ダウンローダー・スタイル設定は取り込みません。
+これはEasyForgeNeo公式のAMD版ではありません。EasyForgeNeoはNVIDIA専用のため、そのインストーラーを呼ばず、**同じForge Neo本体を別フォルダーに導入する独立した補助パッケージ**です。EasyForgeNeoが採用する14種類の拡張は `06_InstallExtensions.bat` で追加できます。モデル一括ダウンローダー・スタイル設定は取り込みません。
 
 **AMD実機でのUI起動・画像生成は未検証です。配布時は実験版として扱ってください。** 本パッケージの作成PCはRTX 4070 Ti SUPERです。GPU検出、GPU演算、UI起動、画像生成を別々の検証段階として記録します。
 
@@ -11,8 +11,9 @@
 1. ZIPを **`D:\EasyForgeNeo-AMD`** など、既存ソフトとは別の短い英数字パスへ展開します。GitHubの「Code → Download ZIP」でも構いません。バッチだけでなく、フォルダー全体が必要です。
 2. `01_Detect.bat` をダブルクリック。GPU名・ドライバー・導入候補が表示されます。
 3. 下の条件を確認して `02_Install.bat` を実行。通常ユーザーで実行します。導入方式と保存先が表示され、`Y`で開始します。
-4. モデルを配置し、`03_Launch.bat` を実行。画面は **http://127.0.0.1:7865** に開きます。モデル未配置でもUI起動を先に試せます。
-5. UIでモデルを選択して1枚生成してください。自動検証を使う場合は、起動したまま別ウィンドウで `05_TestImage.bat` を実行します。
+4. 拡張機能も使う場合は、起動前に `06_InstallExtensions.bat` を実行し、`Y`で追加します（任意）。
+5. モデルを配置し、`03_Launch.bat` を実行。画面は **http://127.0.0.1:7865** に開きます。モデル未配置でもUI起動を先に試せます。
+6. UIでモデルを選択して1枚生成してください。自動検証を使う場合は、起動したまま別ウィンドウで `05_TestImage.bat` を実行します。
 
 終了は起動ウィンドウで **Ctrl+C**。次回からは `03_Launch.bat` だけです。`04_Verify.bat` はForge Neo停止中に依存関係とGPU演算を再確認します。
 
@@ -60,6 +61,43 @@
 
 `-Backend DirectML`や`-Backend ZLUDA`は理由を表示して終了します。実装済みの導入バックエンドはROCmです。これら3方式がすべて使える、と宣伝しないでください。
 
+## EasyForgeNeoの拡張機能を追加する（v0.2.0）
+
+本体の `02_Install.bat` が成功した後、Forge Neoを閉じて **`06_InstallExtensions.bat` → Y → 完了後 `03_Launch.bat`** の順に実行します。既存のNVIDIA版EasyForgeNeoからはコピーせず、それぞれの公式リポジトリから固定commitを取得します。本体と同じ `runtime\forge-neo\extensions` に配置します。
+
+対象は次の14種類です（[EasyForgeNeo公式の拡張導入バッチ](https://github.com/hirorohi03/EasyForgeNeo/blob/4fa851def666d0ba120179b2fd3752d661936c53/EasyForgeNeo/ForgeNeo/ForgeNeoExtension.bat)と照合）。
+
+- [--sd-webui-ar-plusplus](https://github.com/altoiddealer/--sd-webui-ar-plusplus)
+- [aadetailer-neoforge](https://github.com/abzaloff/aadetailer-neoforge)
+- [model-keyword](https://github.com/mix1009/model-keyword)
+- [repeat-generate-4NEO](https://github.com/hirorohi03/repeat-generate-4NEO)
+- [ScribeNEO](https://github.com/hirorohi03/ScribeNEO)
+- [sd-dynamic-prompts](https://github.com/abzaloff/sd-dynamic-prompts)
+- [sd-forge-couple](https://github.com/Haoming02/sd-forge-couple)
+- [sd-webui-forge-spectrum](https://github.com/hirorohi03/sd-webui-forge-spectrum)
+- [sd-webui-negpip](https://github.com/hako-mikan/sd-webui-negpip)
+- [sd-webui-pnginfo-beautify](https://github.com/bluelovers/sd-webui-pnginfo-beautify)
+- [sd-webui-prompt-all-in-one-neo](https://github.com/eduardoabreu81/sd-webui-prompt-all-in-one-neo)
+- [sd-webui-tagcomplete-neo](https://github.com/eduardoabreu81/sd-webui-tagcomplete-neo)
+- [Stable-Diffusion-Webui-Civitai-Helper-RED-UPDATE](https://github.com/Replactionap/Stable-Diffusion-Webui-Civitai-Helper-RED-UPDATE)
+- [z-tipo-extension](https://github.com/KohakuBlueleaf/z-tipo-extension)
+
+**導入できることと、AMD上で全機能が動作することは別です。拡張を含むUI・画像生成は実機未検証です。**
+
+- 既存のtorch・torchvisionと本体パッケージを固定し、依存関係の事前チェックが通った場合に追加します。上流の `install.py` は実行しません。導入後は依存チェックとAMD GPU演算を再確認してから有効化します。
+- 失敗時は追加拡張を有効化しません。原因を解消して `06_InstallExtensions.bat` を再実行できます。ダウンロード途中のファイルは `runtime\temp` に残ります。既存の手動導入拡張は上書きせず停止します。
+- 正常導入後の `03_Launch.bat` は追加拡張を読み込みます。起動に問題があれば **`07_LaunchSafe.bat`** を使ってください（拡張を削除せず、一時的に無効化）。UIのExtensionsから個別に無効化することもできます。
+- `model-keyword` はEasyForgeNeoに合わせて初期状態では無効です。必要ならUIのExtensionsから有効にできます。既存の他の設定・無効化リストは保持します。
+- TagCompleteの追加日本語辞書、EasyForgeNeo独自プリセット・Civitai Helperへの追加パッチ、モデル本体は自動導入しません。タグ補完は拡張に同梱の辞書を使えます。
+- ScribeNEOのLLM機能には別途Ollama・LM Studio等の接続設定が必要です。Prompt All-in-OneのAmazon/Alibaba翻訳SDKは依存互換性を固定できないため含めません。他の翻訳機能もサービス設定・認証・JavaScript実行環境などが必要な場合があります。
+- TIPOの `tipo-kgen` は導入しますが、`llama-cpp-python` の自動導入は無効にします。GGUF方式はこの配布物の対象外です。非GGUF方式もモデル取得・追加メモリが必要で、AMD実機未検証です。
+- AADetailerの検出モデルなど、拡張の初回利用時に追加ダウンロードが発生することがあります。MediaPipeを含め各方式の実動作は未検証です。
+- 拡張の版と追加パッケージは `extensions.json` / `requirements-extensions.txt` に固定しています。UIから一括更新すると検証した組み合わせから外れます。拡張の更新は新しい配布版・別フォルダーで試してください。
+
+### v0.1.0をすでに導入した場合
+
+Forge Neoを終了し、新しいZIPのバッチ・`scripts`・JSON・requirements・説明書を、AMD版の同じフォルダーに上書きしてください。**`runtime` と `logs` は残し、`02_Install.bat` は再実行せず `06_InstallExtensions.bat` を実行します。** 本体レシピは変更していないため、AMD版の導入済み環境に追加できます。これはNVIDIA版EasyForgeNeoへの上書き対応ではありません。
+
 ## モデルを置いて生成する
 
 モデルは同梱・自動ダウンロードしません。利用するモデルのライセンスと配布元を確認してください。まず通常のSD 1.5/SDXLチェックポイントで基本動作を確かめるか、目的のAnimaモデル一式を用意します。
@@ -87,7 +125,7 @@
 - PythonのPATH登録・Windowsレジストリ登録を無効にします。システムのPython、既存venv、NVIDIA環境、HIP SDK、ドライバーを書き換えません。
 - 子プロセス用の環境変数を設定し、他環境のtorch/venv指定を引き継がないようにします。永続的なPATHや実行ポリシーは変更しません。バッチの`ExecutionPolicy Bypass`はそのPowerShellプロセス限りです。
 - フォルダーの所有マーカーと位置を確認し、既存`runtime`への再インストールを拒否します。自動削除・`git reset --hard`はありません。
-- 起動時に本家の依存関係再インストールを無効にし、CUDA版torchへの置換を防ぎます。Sage/Flash/xformersは使用せず、追加拡張も無効にします。外部公開せずlocalhostのみで待ち受けます。
+- 起動時に本家の依存関係再インストールを無効にし、CUDA版torchへの置換を防ぎます。Sage/Flash/xformersは使用せず、追加拡張は導入が完了した後に有効にします。`07_LaunchSafe.bat` では追加拡張を無効にして起動できます。外部公開せずlocalhostのみで待ち受けます。
 
 ### 依存関係の調整
 

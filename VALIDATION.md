@@ -25,4 +25,15 @@
 
 依存関係の解決成功は、wheelのインストールやGPU実行成功の代わりではありません。実機ではInstallの完了マーカーは依存検査とGPU演算の両方が通るまで書き込みません。Launchの`UI READY`とTestImageの`IMAGE SMOKE PASSED`も別の段階です。
 
-知人のPCで確認する順序：Detect → Install → Launch → モデル配置・選択 → TestImage → 出力画像の目視。失敗時は該当ステップのログを確認してください。
+利用するPCで確認する順序：Detect → Install → Launch → モデル配置・選択 → TestImage → 出力画像の目視。失敗時は該当ステップのログを確認してください。
+
+
+## v0.2.0 拡張追加（2026-11-08）
+
+- EasyForgeNeoの固定版導入バッチにある有効な14リポジトリを取得し、各HEADをextensions.jsonに固定。
+- install.py / pyproject.toml / requirementsを確認し、上流インストーラーを実行しない追加依存セットを作成。
+- Windows Python 3.13 / AMD torch・torchvision / 本体パッケージの固定を維持した依存解決に成功（uv、146パッケージ）。実インストール・各モジュールのimport成功を意味しません。
+- Amazon翻訳SDKを含む解決では非常に古いboto3が選ばれたため、クラウド翻訳用のAmazon/Alibaba SDKを配布対象から除外。
+- Pythonテスト11件、PowerShell 5.1安全性チェック17項目に成功。依存失敗時の未有効化・再試行・既存フォルダー保持・ROCm版固定・設定保持・バッチ起動パスを確認。
+- バッチのPowerShellパスに混入していた垂直タブを修正し、全バッチに制御文字検査を追加。
+- AMD実機での14拡張のインストール完走、UI起動、各機能・生成は未検証。TIPO GGUFは対象外。
