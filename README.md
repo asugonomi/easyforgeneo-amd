@@ -1,6 +1,6 @@
 # EasyForgeNeo AMD Companion（Windows・実験版）
 
-**知人のWindows Radeon PCで、ComfyUIを使わずForge Neoの画面から画像を生成するための導入補助です。** Git・Pythonの事前導入は不要です。2026年11月8日の公式情報を調査し、Forge Neoの版とAMD用PyTorchを固定しています。
+**Windows Radeon PCで、ComfyUIを使わずForge Neoの画面から画像を生成するための導入補助です。** Git・Pythonの事前導入は不要です。2026年11月8日の公式情報を調査し、Forge Neoの版とAMD用PyTorchを固定しています。
 
 これはEasyForgeNeo公式のAMD版ではありません。EasyForgeNeoはNVIDIA専用のため、そのインストーラーを呼ばず、**同じForge Neo本体を別フォルダーに導入する独立した補助パッケージ**です。EasyForgeNeo付属の拡張・モデル一括ダウンローダー・スタイル設定は取り込みません。
 
