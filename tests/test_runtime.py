@@ -1,6 +1,7 @@
 import importlib.util
 from pathlib import Path
 import unittest
+import tempfile
 
 spec = importlib.util.spec_from_file_location('runtime', Path(__file__).parents[1]/'scripts/runtime.py')
 runtime = importlib.util.module_from_spec(spec)
@@ -8,6 +9,17 @@ spec.loader.exec_module(runtime)
 
 
 class DeviceSelectionTests(unittest.TestCase):
+    def test_extension_activation_and_safe_mode_keep_installers_disabled(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            self.assertIn('--disable-extra-extensions', runtime.launch_command(root, 7865))
+            (root / 'extensions-complete.json').write_text('{}')
+            self.assertNotIn('--disable-extra-extensions', runtime.launch_command(root, 7865))
+            command = runtime.launch_command(root, 7865, safe_mode=True)
+            self.assertIn('--disable-extra-extensions', command)
+            self.assertIn('--skip-install', command)
+            self.assertIn('--skip-prepare-environment', command)
+
     def test_windows_and_hip_name_normalization(self):
         gpu = dict(index=1, name='AMD Radeon RX 7900 XTX', arch='gfx1100')
         self.assertEqual(runtime.choose_device([gpu], dict(gpuName='Radeon (TM) RX 7900 XTX', arch='gfx1100')), gpu)
