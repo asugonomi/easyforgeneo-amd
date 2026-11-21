@@ -98,6 +98,60 @@ try {
         [IO.Directory]::Delete($pythonAlias)
         [IO.Directory]::Delete($realPython)
     }
+    $profileTest=Join-Path $scratch 'profile'
+    $sharedVae=Join-Path $profileTest 'Documents\ComfyUI\models\vae'
+    $vaeAlias=Join-Path $runtimeTest 'forge-neo\models\VAE\vae'
+    New-Item -ItemType Directory -Path $sharedVae -Force | Out-Null
+    New-Item -ItemType Directory -Path ([IO.Path]::GetDirectoryName($vaeAlias)) -Force | Out-Null
+    'preserve model' | Set-Content (Join-Path $sharedVae 'sentinel.txt')
+    foreach ($relative in @('1','0')) {
+        # Python uses Windows' unprivileged symlink API when Developer Mode is enabled.
+        & python -c 'import os,sys; t,p,r=sys.argv[1:]; os.symlink(os.path.relpath(t,os.path.dirname(p)) if int(r) else t,p,target_is_directory=True)' $sharedVae $vaeAlias $relative
+        if ($LASTEXITCODE -ne 0) { throw 'Could not create test symlink' }
+        try {
+            Assert-RuntimeLinks $runtimeTest $profileTest
+            Check $true 'Approved VAE symbolic link accepted'
+            Check ((Get-Content (Join-Path $sharedVae 'sentinel.txt')) -eq 'preserve model') 'Shared model changed'
+        } finally { [IO.Directory]::Delete($vaeAlias) }
+    }
+    & python -c 'import os,sys; os.symlink(sys.argv[1],sys.argv[2],target_is_directory=True)' $existing $vaeAlias
+    if ($LASTEXITCODE -ne 0) { throw 'Could not create test symlink' }
+    try {
+        $failed=$false
+        try { Assert-RuntimeLinks $runtimeTest $profileTest } catch { $failed=$true }
+        Check $failed 'VAE link to an unapproved destination accepted'
+    } finally { [IO.Directory]::Delete($vaeAlias) }
+    $codeAlias=Join-Path $runtimeTest 'forge-neo\extensions\vae'
+    New-Item -ItemType Directory -Path ([IO.Path]::GetDirectoryName($codeAlias)) -Force | Out-Null
+    & python -c 'import os,sys; os.symlink(sys.argv[1],sys.argv[2],target_is_directory=True)' $sharedVae $codeAlias
+    if ($LASTEXITCODE -ne 0) { throw 'Could not create test symlink' }
+    try {
+        $failed=$false
+        try { Assert-RuntimeLinks $runtimeTest $profileTest } catch { $failed=$true }
+        Check $failed 'Code location symlink accepted'
+    } finally { [IO.Directory]::Delete($codeAlias) }
+    # A matching but missing model directory is not an approved share.
+    $missingProfile=Join-Path $scratch 'missing-profile'
+    $missingTarget=Join-Path $missingProfile 'Documents\ComfyUI\models\vae'
+    & python -c 'import os,sys; os.symlink(sys.argv[1],sys.argv[2],target_is_directory=True)' $missingTarget $vaeAlias
+    if ($LASTEXITCODE -ne 0) { throw 'Could not create test symlink' }
+    try {
+        $failed=$false
+        try { Assert-RuntimeLinks $runtimeTest $missingProfile } catch { $failed=$true }
+        Check $failed 'Missing VAE target accepted'
+    } finally { [IO.Directory]::Delete($vaeAlias) }
+    New-Item -ItemType Directory -Path ([IO.Path]::GetDirectoryName($missingTarget)) -Force | Out-Null
+    New-Item -ItemType Junction -Path $missingTarget -Target $sharedVae | Out-Null
+    & python -c 'import os,sys; os.symlink(sys.argv[1],sys.argv[2],target_is_directory=True)' $missingTarget $vaeAlias
+    if ($LASTEXITCODE -ne 0) { throw 'Could not create test symlink' }
+    try {
+        $failed=$false
+        try { Assert-RuntimeLinks $runtimeTest $missingProfile } catch { $failed=$true }
+        Check $failed 'Chained VAE target accepted'
+    } finally {
+        [IO.Directory]::Delete($vaeAlias)
+        [IO.Directory]::Delete($missingTarget)
+    }
 } finally {
     $resolved=[IO.Path]::GetFullPath($scratch)
     $tempPrefix=[IO.Path]::GetFullPath([IO.Path]::GetTempPath()).TrimEnd('\') + '\amd-safety-'
