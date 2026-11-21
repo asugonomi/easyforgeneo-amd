@@ -47,3 +47,7 @@ Windows PowerShell 5.1で24項目の安全性チェックに成功。実際の�
 ## v0.2.2（2026-11-21）
 
 Windows PowerShell 5.1で32項目の安全性チェックに成功。実際のシンボリックリンクで、指定VAE共有の相対/絶対パス、共有先データの保持、別参照先・コード内リンク・欠落先・連鎖リンクの拒否を検証。AMD実機での拡張導入完走・起動・画像生成は未検証。
+
+## v0.2.3 model sharing
+
+Windows PowerShell 5.1: 95 safety assertions passed. Real relative/absolute directory symlinks and junctions tested for model roots and children, arbitrary nested folders, and whole models directory. Code aliases, prefix-lookalike outside destinations, missing/chained destinations remain rejected. No AMD hardware/UI/generation validation performed.

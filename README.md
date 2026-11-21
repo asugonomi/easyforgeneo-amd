@@ -6,17 +6,21 @@
 
 **AMD実機でのUI起動・画像生成は未検証です。配布時は実験版として扱ってください。** 本パッケージの作成PCはRTX 4070 Ti SUPERです。GPU検出、GPU演算、UI起動、画像生成を別々の検証段階として記録します。
 
-## v0.2.2：ComfyUIのVAE共有リンクを許可
+## v0.2.3：ComfyUIのモデル共有リンク
 
-`runtime\forge-neo\models\VAE\vae` というシンボリックリンクが、現在のWindowsユーザーの **`Documents\ComfyUI\models\vae`** という実フォルダーを指す場合だけ許可します。相対パスはリンクが置かれたフォルダーを基準に解決して照合します。任意のモデル共有を一括許可する変更ではありません。外部共有先の走査・書き換え・削除は、このチェックでは行いません。別の参照先、リンクの連鎖、実行コードの場所のリンクは引き続き拒否します。
+起動・拡張導入前のチェックで、**`runtime/forge-neo/models` フォルダー自体と、その配下すべてのディレクトリ共有リンク**を許可します。VAE、チェックポイント、LoRA、Text encoder、ControlNet、アップスケーラー、任意のサブフォルダーが対象です。種類ごとの許可リストはありません。
 
-**v0.2.1適用済みなら `scripts/Common.ps1` だけを上書き**してください。v0.2.0以前からは `scripts/Manage.ps1` も合わせて上書きします。その後、Forge Neoを閉じた状態で `06_InstallExtensions.bat` を再実行し、完了後 `03_Launch.bat` で起動してください。本体の再インストール、共有リンクやComfyUIのモデルの削除は不要です。
+共有先は現在のWindowsユーザーの **`Documents/ComfyUI/models` 自体またはその配下の実フォルダー**に限定します。絶対・相対シンボリックリンクとジャンクションに対応します。相対パスはリンクの親を基準に解決します。共有先がこの範囲外、リンク先や親が再リンク、参照先が存在しない、ファイル単位のリンク、コード配置場所のリンクは拒否します。このチェックは外部モデルの内容を走査・変更しません。共有の許可はモデル形式のForge Neo対応を保証しません。
 
-## v0.2.1：Pythonリンクによる起動停止の修正
+例：`text_encoder/text_encoders` → `Documents/ComfyUI/models/text_encoders`、`Lora/loras` → `Documents/ComfyUI/models/loras`。Forge Neoが認識する配置はモデルの種類に合わせてください。[ComfyUIの公式フォルダー定義](https://github.com/Comfy-Org/ComfyUI/blob/master/folder_paths.py)も参照できます。既存のPython 3.13 → 3.13.15内部ジャンクションの許可は維持しています。
 
-`runtime contains a junction/symlink` で起動が止まる問題を修正しました。`runtime\python\cpython-3.13-windows-x86_64-none` が、同じ環境内の実フォルダー `runtime\python\cpython-3.13.15-windows-x86_64-none` に向いたジャンクションである場合だけ許可します。その他のリンク、参照先のリンク・外部参照・別バージョンは拒否します。
+### 導入済み環境の更新
 
-導入済みのv0.2.0は、Forge Neoを終了して新しい配布物の **`scripts/Common.ps1` と `scripts/Manage.ps1` の2ファイルだけ**を、導入先の同じ場所に上書きしてください。その後 `03_Launch.bat` を実行します。`runtime` の削除やリンクの作り直し、Install・拡張導入の再実行は不要です。修正は起動前チェックが対象で、GPUや画像生成の実機検証を意味しません。
+1. Forge Neoを終了します。
+2. **v0.2.1以降なら `scripts/Common.ps1` だけを上書き**してください。v0.2.0以前からは `scripts/Manage.ps1` も上書きします。
+3. 拡張導入で停止していた場合は `06_InstallExtensions.bat` を再実行し、完了後 `03_Launch.bat` で起動します。
+
+`02_Install.bat` による再インストール、`runtime`・共有リンク・ComfyUIモデルの削除は不要です。上書き前のスクリプトは別フォルダーに保存しておくと戻せます。
 
 ## 最短の使い方
 
@@ -123,7 +127,7 @@ Forge Neoを終了し、新しいZIPのバッチ・`scripts`・JSON・requiremen
 
 必要に応じてフォルダーを作成します。Animaの種類によって必要なencoder/VAEが異なるため、[Forge Neo公式モデル案内](https://github.com/Haoming02/sd-webui-forge-classic/wiki/Download-Models)とモデル配布元の組み合わせに従ってください。通常のSDXLチェックポイントを使う場合、専用の分離Text encoderが不要なものもあります。
 
-既存NVIDIA環境のモデルを使う場合は、必要なファイルを**コピー**してください。上記のPythonエイリアスと指定のComfyUI VAE共有以外のジャンクション・シンボリックリンクは拒否します。既存の設定や拡張フォルダーをコピーしないでください。
+既存NVIDIA環境のモデルを使う場合は、必要なファイルを**コピー**してください。上記のPythonエイリアスと上記のComfyUI models共有以外のジャンクション・シンボリックリンクは拒否します。既存の設定や拡張フォルダーをコピーしないでください。
 
 起動後、モデル一覧を更新してcheckpoint、必要なencoder/VAEを選びます。初回は512×512、batch 1、Hiresなしで試し、成功後に解像度を上げます。これは疎通テストの設定であり、Animaの画質評価用設定ではありません。FP8/INT8・特殊attention・学習用途・動画・全拡張の互換性は未検証です。
 
