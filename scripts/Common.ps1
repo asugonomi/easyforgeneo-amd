@@ -15,13 +15,15 @@ function Assert-NoLinks([string]$Path) {
     }
 }
 
-function Assert-RuntimeLinks([string]$Runtime) {
+function Assert-RuntimeLinks([string]$Runtime, [string]$ProfileRoot = [Environment]::GetFolderPath('UserProfile')) {
     Assert-NoLinks $Runtime
     if (!(Test-Path -LiteralPath $Runtime)) { return }
     $runtimePath = [IO.Path]::GetFullPath($Runtime).TrimEnd('\')
     # This is the single uv alias observed in the pinned Python 3.13.15 recipe.
     $alias = Join-Path $runtimePath 'python\cpython-3.13-windows-x86_64-none'
     $expected = Join-Path $runtimePath 'python\cpython-3.13.15-windows-x86_64-none'
+    $vaeAlias = Join-Path $runtimePath 'forge-neo\models\VAE\vae'
+    $vaeTarget = [IO.Path]::GetFullPath((Join-Path $ProfileRoot 'Documents\ComfyUI\models\vae')).TrimEnd('\')
     $pending = New-Object 'System.Collections.Generic.Stack[string]'
     $pending.Push($runtimePath)
     while ($pending.Count) {
@@ -40,8 +42,23 @@ function Assert-RuntimeLinks([string]$Runtime) {
                         }
                     }
                 }
-                if (!$allowed) { throw "Unexpected runtime junction/symlink: $($item.FullName). Only the pinned Python alias is allowed." }
-                # Never traverse the alias; its real target is scanned normally.
+                if ($item.FullName -ieq $vaeAlias -and $item.LinkType -eq 'SymbolicLink') {
+                    $targets = @($item.Target)
+                    if ($targets.Count -eq 1 -and ![string]::IsNullOrWhiteSpace($targets[0])) {
+                        $target = [string]$targets[0]
+                        # Relative symlinks are relative to their parent, not the shell cwd.
+                        if (![IO.Path]::IsPathRooted($target)) {
+                            $target = Join-Path ([IO.Path]::GetDirectoryName($item.FullName)) $target
+                        }
+                        if ([IO.Path]::GetFullPath($target).TrimEnd('\') -ieq $vaeTarget) {
+                            Assert-NoLinks $vaeTarget
+                            $allowed = Test-Path -LiteralPath $vaeTarget -PathType Container
+                        }
+                    }
+                }
+                if (!$allowed) { throw "Unexpected runtime junction/symlink: $($item.FullName). Only the pinned Python alias and the approved ComfyUI VAE share are allowed." }
+                # Never traverse aliases here. The VAE share is external model data;
+                # setup must not copy, modify or delete anything through that link.
                 continue
             }
             if ($item.PSIsContainer) { $pending.Push($item.FullName) }
