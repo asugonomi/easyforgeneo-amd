@@ -5,6 +5,7 @@ param(
     [int]$GpuIndex=-1,
     [switch]$Experimental,
     [switch]$SafeMode,
+    [switch]$Listen,
     [switch]$NonInteractive,
     [ValidateRange(1024,65535)][int]$Port=7865
 )
@@ -124,6 +125,7 @@ try {
         if ($Action -eq 'Launch') {
             $launchArgs=@("$PSScriptRoot\runtime.py",'launch','--root',$runtime,'--port',"$Port")
             if ($SafeMode) { $launchArgs += '--safe-mode' }
+            if ($Listen) { $launchArgs += '--listen' }
             Invoke-Checked $python $launchArgs
         }
         elseif ($Action -eq 'Extensions') {

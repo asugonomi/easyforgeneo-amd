@@ -90,24 +90,26 @@ def request(port, route, payload=None, timeout=10):
         return json.load(resp)
 
 
-def launch_command(root, port, safe_mode=False):
+def launch_command(root, port, safe_mode=False, listen=False):
     command = [sys.executable, "-u", "launch.py", "--skip-prepare-environment", "--skip-install",
                "--use-pytorch-cross-attention", "--disable-sage", "--disable-flash", "--disable-xformers",
-               "--server-name", "127.0.0.1", "--port", str(port),
+               "--server-name", "0.0.0.0" if listen else "127.0.0.1", "--port", str(port),
                "--api", "--autolaunch"]
     if safe_mode or not (root / "extensions-complete.json").exists():
         command.append("--disable-extra-extensions")
     return command
 
 
-def launch(root, port, safe_mode=False):
+def launch(root, port, safe_mode=False, listen=False):
     selected = verify(root)
     with socket.socket() as sock:
-        sock.bind(("127.0.0.1", port))  # Fail before launch if another app owns the port.
+        sock.bind(("0.0.0.0" if listen else "127.0.0.1", port))  # Fail before launch if another app owns the port.
     env = os.environ.copy()
     env["HIP_VISIBLE_DEVICES"] = str(selected["index"])
     env["CUDA_VISIBLE_DEVICES"] = str(selected["index"])
-    command = launch_command(root, port, safe_mode)
+    command = launch_command(root, port, safe_mode, listen)
+    if listen:
+        print(f"[LISTEN] UI and API on all IPv4 interfaces, port {port}. Use http://<this-PC-LAN-IP>:{port} on your trusted LAN. No authentication configured.", flush=True)
     # Never execute third-party startup installers in the ROCm environment.
     env["PIP_CONSTRAINT"] = str(root / "extensions-constraints.txt") if (root / "extensions-constraints.txt").exists() else str(root / "constraints.txt")
     env["TIPO_NO_AUTO_INSTALL"] = "1"
@@ -187,12 +189,13 @@ def main():
     parser.add_argument("--root", required=True, type=Path)
     parser.add_argument("--port", type=int, default=7865)
     parser.add_argument("--safe-mode", action="store_true")
+    parser.add_argument("--listen", action="store_true")
     args = parser.parse_args()
     root = args.root.resolve()
     if args.action == "verify":
         verify(root)
     elif args.action == "launch":
-        launch(root, args.port, args.safe_mode)
+        launch(root, args.port, args.safe_mode, args.listen)
     else:
         generate(root, args.port)
 
