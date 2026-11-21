@@ -51,6 +51,53 @@ try {
     Check $failed 'Junction ancestor accepted'
     # Delete the junction itself, never recurse through its target.
     [IO.Directory]::Delete($link)
+    $runtimeTest=Join-Path $scratch 'runtime'
+    $pythonDir=Join-Path $runtimeTest 'python'
+    $realPython=Join-Path $pythonDir 'cpython-3.13.15-windows-x86_64-none'
+    $pythonAlias=Join-Path $pythonDir 'cpython-3.13-windows-x86_64-none'
+    New-Item -ItemType Directory -Path $realPython -Force | Out-Null
+    Assert-RuntimeLinks $runtimeTest
+    Check $true 'Runtime without links accepted'
+    New-Item -ItemType Junction -Path $pythonAlias -Target $realPython | Out-Null
+    try {
+        Assert-RuntimeLinks $runtimeTest
+        Check $true 'Exact Python alias accepted'
+        $nested=Join-Path $realPython 'unexpected'
+        New-Item -ItemType Junction -Path $nested -Target $existing | Out-Null
+        try {
+            $failed=$false
+            try { Assert-RuntimeLinks $runtimeTest } catch { $failed=$true }
+            Check $failed 'Link inside Python target accepted'
+        } finally { [IO.Directory]::Delete($nested) }
+    } finally { [IO.Directory]::Delete($pythonAlias) }
+    foreach ($badTarget in @($existing, (Join-Path $pythonDir 'cpython-3.13.14-windows-x86_64-none'))) {
+        if (!(Test-Path -LiteralPath $badTarget)) { New-Item -ItemType Directory -Path $badTarget | Out-Null }
+        New-Item -ItemType Junction -Path $pythonAlias -Target $badTarget | Out-Null
+        try {
+            $failed=$false
+            try { Assert-RuntimeLinks $runtimeTest } catch { $failed=$true }
+            Check $failed 'External or wrong-version Python target accepted'
+        } finally { [IO.Directory]::Delete($pythonAlias) }
+    }
+    $wrongAlias=Join-Path $runtimeTest 'other-python'
+    New-Item -ItemType Junction -Path $wrongAlias -Target $realPython | Out-Null
+    try {
+        $failed=$false
+        try { Assert-RuntimeLinks $runtimeTest } catch { $failed=$true }
+        Check $failed 'Unexpected alias location accepted'
+    } finally { [IO.Directory]::Delete($wrongAlias) }
+    # An approved-looking target must itself be a real directory, not a second link.
+    [IO.Directory]::Delete($realPython)
+    New-Item -ItemType Junction -Path $realPython -Target $existing | Out-Null
+    New-Item -ItemType Junction -Path $pythonAlias -Target $realPython | Out-Null
+    try {
+        $failed=$false
+        try { Assert-RuntimeLinks $runtimeTest } catch { $failed=$true }
+        Check $failed 'Chained Python junction accepted'
+    } finally {
+        [IO.Directory]::Delete($pythonAlias)
+        [IO.Directory]::Delete($realPython)
+    }
 } finally {
     $resolved=[IO.Path]::GetFullPath($scratch)
     $tempPrefix=[IO.Path]::GetFullPath([IO.Path]::GetTempPath()).TrimEnd('\') + '\amd-safety-'
