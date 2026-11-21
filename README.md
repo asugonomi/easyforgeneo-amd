@@ -6,6 +6,12 @@
 
 **AMD実機でのUI起動・画像生成は未検証です。配布時は実験版として扱ってください。** 本パッケージの作成PCはRTX 4070 Ti SUPERです。GPU検出、GPU演算、UI起動、画像生成を別々の検証段階として記録します。
 
+## v0.2.2：ComfyUIのVAE共有リンクを許可
+
+`runtime\forge-neo\models\VAE\vae` というシンボリックリンクが、現在のWindowsユーザーの **`Documents\ComfyUI\models\vae`** という実フォルダーを指す場合だけ許可します。相対パスはリンクが置かれたフォルダーを基準に解決して照合します。任意のモデル共有を一括許可する変更ではありません。外部共有先の走査・書き換え・削除は、このチェックでは行いません。別の参照先、リンクの連鎖、実行コードの場所のリンクは引き続き拒否します。
+
+**v0.2.1適用済みなら `scripts/Common.ps1` だけを上書き**してください。v0.2.0以前からは `scripts/Manage.ps1` も合わせて上書きします。その後、Forge Neoを閉じた状態で `06_InstallExtensions.bat` を再実行し、完了後 `03_Launch.bat` で起動してください。本体の再インストール、共有リンクやComfyUIのモデルの削除は不要です。
+
 ## v0.2.1：Pythonリンクによる起動停止の修正
 
 `runtime contains a junction/symlink` で起動が止まる問題を修正しました。`runtime\python\cpython-3.13-windows-x86_64-none` が、同じ環境内の実フォルダー `runtime\python\cpython-3.13.15-windows-x86_64-none` に向いたジャンクションである場合だけ許可します。その他のリンク、参照先のリンク・外部参照・別バージョンは拒否します。
@@ -117,7 +123,7 @@ Forge Neoを終了し、新しいZIPのバッチ・`scripts`・JSON・requiremen
 
 必要に応じてフォルダーを作成します。Animaの種類によって必要なencoder/VAEが異なるため、[Forge Neo公式モデル案内](https://github.com/Haoming02/sd-webui-forge-classic/wiki/Download-Models)とモデル配布元の組み合わせに従ってください。通常のSDXLチェックポイントを使う場合、専用の分離Text encoderが不要なものもあります。
 
-既存NVIDIA環境のモデルを使う場合は、必要なファイルを**コピー**してください。ジャンクション・シンボリックリンクは拒否します。既存の設定や拡張フォルダーをコピーしないでください。
+既存NVIDIA環境のモデルを使う場合は、必要なファイルを**コピー**してください。上記のPythonエイリアスと指定のComfyUI VAE共有以外のジャンクション・シンボリックリンクは拒否します。既存の設定や拡張フォルダーをコピーしないでください。
 
 起動後、モデル一覧を更新してcheckpoint、必要なencoder/VAEを選びます。初回は512×512、batch 1、Hiresなしで試し、成功後に解像度を上げます。これは疎通テストの設定であり、Animaの画質評価用設定ではありません。FP8/INT8・特殊attention・学習用途・動画・全拡張の互換性は未検証です。
 
