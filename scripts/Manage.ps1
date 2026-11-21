@@ -14,12 +14,8 @@ $runtime = Join-Path $root 'runtime'
 $logStarted=$false; $lock=$null; $exitCode=0
 try {
     Assert-NoLinks $root
-    # Reject links anywhere under managed runtime, including venv and model junctions.
-    Assert-NoLinks $runtime
-    if (Test-Path -LiteralPath $runtime) {
-        $links = @(Get-ChildItem -LiteralPath $runtime -Force -Recurse -Attributes ReparsePoint -ErrorAction Stop)
-        if ($links.Count) { throw 'runtime contains a junction/symlink. Use a separate fresh directory.' }
-    }
+    # Allow only uv's exact, internal Python 3.13 -> 3.13.15 alias.
+    Assert-RuntimeLinks $runtime
     $manifest = Get-Content -LiteralPath "$root\manifest.json" -Raw | ConvertFrom-Json
     if (!(Test-Path -LiteralPath "$root\logs")) { New-Item -ItemType Directory "$root\logs" | Out-Null }
     Assert-NoLinks "$root\logs"

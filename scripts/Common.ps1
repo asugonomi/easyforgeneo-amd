@@ -15,6 +15,40 @@ function Assert-NoLinks([string]$Path) {
     }
 }
 
+function Assert-RuntimeLinks([string]$Runtime) {
+    Assert-NoLinks $Runtime
+    if (!(Test-Path -LiteralPath $Runtime)) { return }
+    $runtimePath = [IO.Path]::GetFullPath($Runtime).TrimEnd('\')
+    # This is the single uv alias observed in the pinned Python 3.13.15 recipe.
+    $alias = Join-Path $runtimePath 'python\cpython-3.13-windows-x86_64-none'
+    $expected = Join-Path $runtimePath 'python\cpython-3.13.15-windows-x86_64-none'
+    $pending = New-Object 'System.Collections.Generic.Stack[string]'
+    $pending.Push($runtimePath)
+    while ($pending.Count) {
+        foreach ($item in Get-ChildItem -LiteralPath $pending.Pop() -Force -ErrorAction Stop) {
+            if ($item.Attributes -band [IO.FileAttributes]::ReparsePoint) {
+                $allowed = $false
+                if ($item.FullName -ieq $alias -and $item.LinkType -eq 'Junction') {
+                    $targets = @($item.Target)
+                    if ($targets.Count -eq 1 -and ![string]::IsNullOrWhiteSpace($targets[0])) {
+                        $target = [string]$targets[0]
+                        if ([IO.Path]::IsPathRooted($target) -and
+                            [IO.Path]::GetFullPath($target).TrimEnd('\') -ieq $expected) {
+                            # Reject redirected parents, chained links and missing targets.
+                            Assert-NoLinks $expected
+                            $allowed = Test-Path -LiteralPath $expected -PathType Container
+                        }
+                    }
+                }
+                if (!$allowed) { throw "Unexpected runtime junction/symlink: $($item.FullName). Only the pinned Python alias is allowed." }
+                # Never traverse the alias; its real target is scanned normally.
+                continue
+            }
+            if ($item.PSIsContainer) { $pending.Push($item.FullName) }
+        }
+    }
+}
+
 function Get-GpuPlan($Gpu, $Manifest) {
     if ($Gpu.PNPDeviceID -notmatch '^PCI\\VEN_1002&') {
         return [pscustomobject]@{ backend='blocked'; arch=''; tier='not-amd'; reason='AMD PCI GPU not detected' }
