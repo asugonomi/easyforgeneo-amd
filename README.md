@@ -6,6 +6,12 @@
 
 **AMD実機でのUI起動・画像生成は未検証です。配布時は実験版として扱ってください。** 本パッケージの作成PCはRTX 4070 Ti SUPERです。GPU検出、GPU演算、UI起動、画像生成を別々の検証段階として記録します。
 
+## v0.2.1：Pythonリンクによる起動停止の修正
+
+`runtime contains a junction/symlink` で起動が止まる問題を修正しました。`runtime\python\cpython-3.13-windows-x86_64-none` が、同じ環境内の実フォルダー `runtime\python\cpython-3.13.15-windows-x86_64-none` に向いたジャンクションである場合だけ許可します。その他のリンク、参照先のリンク・外部参照・別バージョンは拒否します。
+
+導入済みのv0.2.0は、Forge Neoを終了して新しい配布物の **`scripts/Common.ps1` と `scripts/Manage.ps1` の2ファイルだけ**を、導入先の同じ場所に上書きしてください。その後 `03_Launch.bat` を実行します。`runtime` の削除やリンクの作り直し、Install・拡張導入の再実行は不要です。修正は起動前チェックが対象で、GPUや画像生成の実機検証を意味しません。
+
 ## 最短の使い方
 
 1. ZIPを **`D:\EasyForgeNeo-AMD`** など、既存ソフトとは別の短い英数字パスへ展開します。GitHubの「Code → Download ZIP」でも構いません。バッチだけでなく、フォルダー全体が必要です。
