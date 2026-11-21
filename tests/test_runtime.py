@@ -20,6 +20,15 @@ class DeviceSelectionTests(unittest.TestCase):
             self.assertIn('--skip-install', command)
             self.assertIn('--skip-prepare-environment', command)
 
+    def test_listen_is_opt_in_and_keeps_amd_flags(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            for listen, host in [(False, '127.0.0.1'), (True, '0.0.0.0')]:
+                command = runtime.launch_command(Path(tmp), 7870, listen=listen)
+                self.assertEqual(command[command.index('--server-name') + 1], host)
+                self.assertEqual(command[command.index('--port') + 1], '7870')
+                for flag in ['--api', '--skip-install', '--skip-prepare-environment', '--disable-xformers']:
+                    self.assertIn(flag, command)
+
     def test_windows_and_hip_name_normalization(self):
         gpu = dict(index=1, name='AMD Radeon RX 7900 XTX', arch='gfx1100')
         self.assertEqual(runtime.choose_device([gpu], dict(gpuName='Radeon (TM) RX 7900 XTX', arch='gfx1100')), gpu)
