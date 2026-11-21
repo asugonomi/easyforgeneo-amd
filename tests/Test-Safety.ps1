@@ -1,4 +1,4 @@
-$ErrorActionPreference='Stop'
+﻿$ErrorActionPreference='Stop'
 . "$PSScriptRoot\..\scripts\Common.ps1"
 $manifest=Get-Content "$PSScriptRoot\..\manifest.json" -Raw | ConvertFrom-Json
 $count=0
@@ -98,6 +98,53 @@ try {
         [IO.Directory]::Delete($pythonAlias)
         [IO.Directory]::Delete($realPython)
     }
+    # Exercise each model destination with relative/absolute symlinks and junctions.
+    $profileTest=Join-Path $scratch 'profile'
+    foreach ($pair in @(@('Stable-diffusion','checkpoints'),@('Stable-diffusion','diffusion_models'),@('Stable-diffusion','unet'),@('Lora','loras'),@('text_encoder','text_encoders'),@('text_encoder','clip'),@('VAE','vae'),@('ControlNet','controlnet'),@('upscale_models','upscale_models'),@('custom\nested','custom\nested'))) {
+        $target=Join-Path $profileTest ('Documents\ComfyUI\models\' + $pair[1])
+        $folder=Join-Path $runtimeTest ('forge-neo\models\' + $pair[0])
+        New-Item -ItemType Directory -Path $target -Force | Out-Null
+        foreach ($placement in @('root','child')) {
+            $share=$folder
+            if ($placement -eq 'child') {
+                New-Item -ItemType Directory -Path $folder -Force | Out-Null
+                $share=Join-Path $folder 'shared'
+            }
+            foreach ($mode in @('relative','absolute','junction')) {
+                if ($mode -eq 'junction') {
+                    New-Item -ItemType Junction -Path $share -Target $target | Out-Null
+                } else {
+                    $relative=if ($mode -eq 'relative') {'1'} else {'0'}
+                    New-Item -ItemType Directory -Path ([IO.Path]::GetDirectoryName($share)) -Force | Out-Null
+                    & python -c 'import os,sys; t,p,r=sys.argv[1:]; os.symlink(os.path.relpath(t,os.path.dirname(p)) if int(r) else t,p,target_is_directory=True)' $target $share $relative
+                    if ($LASTEXITCODE -ne 0) { throw 'Could not create model test symlink' }
+                }
+                try { Assert-RuntimeLinks $runtimeTest $profileTest; Check $true "Model share accepted: $pair $placement $mode" }
+                finally { [IO.Directory]::Delete($share) }
+            }
+            if ($placement -eq 'child') { [IO.Directory]::Delete($folder) }
+        }
+    }
+    $wholeRuntime=Join-Path $scratch 'whole-runtime'
+    $wholeLink=Join-Path $wholeRuntime 'forge-neo\models'
+    $wholeTarget=Join-Path $profileTest 'Documents\ComfyUI\models'
+    New-Item -ItemType Directory -Path ([IO.Path]::GetDirectoryName($wholeLink)) -Force | Out-Null
+    New-Item -ItemType Junction -Path $wholeLink -Target $wholeTarget | Out-Null
+    try { Assert-RuntimeLinks $wholeRuntime $profileTest; Check $true 'Whole models directory accepted' }
+    finally { [IO.Directory]::Delete($wholeLink) }
+    # Reject code aliases and prefix-lookalike destinations.
+    foreach ($badShare in @('forge-neo\extensions\wrong','forge-neo\models\text_encoder\nested\wrong')) {
+        $share=Join-Path $runtimeTest $badShare
+        New-Item -ItemType Directory -Path ([IO.Path]::GetDirectoryName($share)) -Force | Out-Null
+        $target=Join-Path $profileTest 'Documents\ComfyUI\models-unsafe\text_encoders'
+        New-Item -ItemType Directory -Path $target -Force | Out-Null
+        New-Item -ItemType Junction -Path $share -Target $target | Out-Null
+        try {
+            $failed=$false
+            try { Assert-RuntimeLinks $runtimeTest $profileTest } catch { $failed=$true }
+            Check $failed 'Code alias or outside model root accepted'
+        } finally { [IO.Directory]::Delete($share) }
+    }
     $profileTest=Join-Path $scratch 'profile'
     $sharedVae=Join-Path $profileTest 'Documents\ComfyUI\models\vae'
     $vaeAlias=Join-Path $runtimeTest 'forge-neo\models\VAE\vae'
@@ -160,3 +207,4 @@ try {
     }
 }
 Write-Host "PASS: $count safety assertions"
+
